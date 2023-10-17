@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Oculus App Info</title>
+</head>
+<body>
+    <h1>Oculus App Information</h1>
+    <div id="appInfo">
+        <input type="text" id="urlInput" placeholder="Enter Oculus App URL">
+        <button id="fetchButton">Fetch App Info</button>
+    </div>
+
+    <div id="appInfoResult"></div>
+
+    <script>
+        document.getElementById('fetchButton').addEventListener('click', scrapeAppInfo);
+
+        function scrapeAppInfo() {
+            const appUrl = document.getElementById('urlInput').value;
+
+            if (!appUrl) {
+                alert("Please enter an Oculus App URL.");
+                return;
+            }
+
+            fetch(appUrl)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const appTitle = doc.querySelector('meta[property="og:title"]').content;
+                    const appDescription = doc.querySelector('meta[property="og:description"]').content;
+                    displayAppInfo(appTitle, appDescription);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function displayAppInfo(appTitle, appDescription) {
+            const appInfoElement = document.getElementById('appInfoResult');
+
+            appInfoElement.innerHTML = `
+                <h2>${appTitle}</h2>
+                <p>${appDescription}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
